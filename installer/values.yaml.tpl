@@ -191,10 +191,12 @@ pipelines:
 {{- $tpaOIDCClientsSecretName := "tpa-realm-clients" }}
 
 trustedProfileAnalyzer:
-  enabled: {{ $tpa.Enabled }}
+  cycloneDXVersion: 1.4
   oidcIssuerURL: {{ $tpaOIDCIssuerURL }}
   namespace: "{{ $tpa.Namespace }}"
   appDomain: "{{ $tpaAppDomain }}"
+  integrationSecret:
+    namespace: {{ .Installer.Namespace }}
   ingress: &tpaIngress
     className: openshift-default
   openshift: &tpaOpenShift
@@ -255,17 +257,6 @@ trustedProfileAnalyzer:
               name: {{ $tpaOIDCClientsSecretName }}
               key: testingManager
 {{- end }}
-
-trustification:
-  name: trustedprofileanalyzer
-  namespace: "{{ $tpa.Namespace }}"
-  appDomain: "{{ $tpaAppDomain }}"
-  openshift: *tpaOpenShift
-  storage: *tpaStorage
-  oidc: *tpaOIDC
-  ingress: *tpaIngress
-  tls:
-    serviceEnabled: "{{ not $crc }}"
 
 #
 # tsf-tas

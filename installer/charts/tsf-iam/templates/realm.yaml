@@ -87,52 +87,6 @@ data:
     {{- $oidcCredentialsTPA = mergeOverwrite $oidcCredentialsTPA (dict $k $s) }}
   {{ $k }}: {{ $s }}
   {{- end }}
-#
-# TPA Integration Secret
-#
-#   Creates a secret to store integration details.
-#
----
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app: keycloak
-  namespace: {{
-    required ".Values.trustedProfileAnalyzerRealm.integrationSecret.namespace is required"
-      $tpa.integrationSecret.namespace
-  }}
-  name: {{
-    required "Values.trustedProfileAnalyzerRealm.integrationSecret.name is required"
-      $tpa.integrationSecret.name
-  }}
-type: Opaque
-stringData:
-  bombastic_api_url: {{
-    required ".Values.trustedProfileAnalyzerRealm.integrationSecret.bombasticAPI is required"
-      $tpa.integrationSecret.bombasticAPI
-  }}
-  bombastic_api_service_url: {{
-    required ".Values.trustedProfileAnalyzerRealm.integrationSecret.bombasticAPIService is required"
-      $tpa.integrationSecret.bombasticAPIService
-  }}
-  oidc_issuer_url: {{
-    required ".Values.trustedProfileAnalyzerRealm.oidcIssuerURL is required"
-      $tpa.oidcIssuerURL
-  }}
-  oidc_client_id: {{
-    required ".Values.trustedProfileAnalyzerRealm.integrationSecret.oidcClientID is required"
-      $tpa.integrationSecret.oidcClientID
-  }}
-  oidc_client_secret: {{
-    get $oidcCredentialsTPA
-      $tpa.integrationSecret.oidcClientID |
-        b64dec
-  }}
-  supported_cyclonedx_version: "{{
-    required ".Values.trustedProfileAnalyzerRealm.integrationSecret.cycloneDXVersion is required"
-      $tpa.integrationSecret.cycloneDXVersion
-  }}"
 {{- end }}
 #
 # Realm Admin

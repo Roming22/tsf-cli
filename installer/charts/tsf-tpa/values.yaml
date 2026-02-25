@@ -5,15 +5,15 @@
 #  https://access.redhat.com/products/red-hat-trusted-profile-analyzer
 #
 trustedProfileAnalyzer:
-  # Controls whether Trusted Profile Analyzer (Trustification) is enabled,
-  # which includes the deployment of the application components, and the Keycloak
-  # Realm import.
-  enabled: true
+  # Supported CycloneDX version for SBOMs.
+  cycloneDXVersion: 1.4
   # Realm's OIDC issuer URL, the endpoint to TPA's realm.
   oidcIssuerURL: __OVERWRITE_ME__
   name: trustedprofileanalyzer
   namespace: __OVERWRITE_ME__
   appDomain: __OVERWRITE_ME__
+  integrationSecret:
+    namespace: __OVERWRITE_ME__
   replicas: 1
   rust:
     logFilter: debug
@@ -178,11 +178,3 @@ trustedProfileAnalyzer:
   # TPA is composed by services, each service needs integration with S3 bucket and
   # Kafka topics. When the bucket receives a new document, a message is issued to
   # the "stored" Kafka topic.
-#
-# Trustification Helm chart values, linking its configuration with Red Hat's
-# Trusted Profile Analyzer chart sections.
-#
-#   https://github.com/trustification/trustification
-#
-trustification:
-  appDomain: __OVERWRITE_ME__
