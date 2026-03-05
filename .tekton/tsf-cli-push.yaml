@@ -26,6 +26,10 @@ spec:
     value: quay.io/redhat-user-workloads/rhtap-shared-team-tenant/tsf-cli:{{revision}}
   - name: dockerfile
     value: Containerfile
+  - name: build-platforms
+    value:
+      - linux/arm64
+      - linux/x86_64
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
@@ -74,7 +78,7 @@ spec:
       description: Build a source image.
       name: build-source-image
       type: string
-    - default: "false"
+    - default: "true"
       description: Add built image into an OCI image index
       name: build-image-index
       type: string
@@ -99,6 +103,12 @@ spec:
         VMs
       name: privileged-nested
       type: string
+    - default:
+        - linux/x86_64
+      description: List of platforms to build the container images on. The available
+        set of values is determined by the configuration of the multi-platform-controller.
+      name: build-platforms
+      type: array
     results:
     - description: ""
       name: IMAGE_URL
@@ -176,7 +186,12 @@ spec:
         workspace: git-auth
       - name: netrc
         workspace: netrc
-    - name: build-container
+    - name: build-images
+      matrix:
+        params:
+        - name: PLATFORM
+          value:
+          - $(params.build-platforms[*])
       params:
       - name: IMAGE
         value: $(params.output-image)
@@ -197,10 +212,8 @@ spec:
         - $(params.build-args[*])
       - name: BUILD_ARGS_FILE
         value: $(params.build-args-file)
-      - name: PRIVILEGED_NESTED
-        value: $(params.privileged-nested)
-      - name: SOURCE_URL
-        value: $(tasks.clone-repository.results.url)
+      - name: IMAGE_APPEND_PLATFORM
+        value: "true"
       - name: BUILDAH_FORMAT
         value: $(params.buildah-format)
       - name: HTTP_PROXY
@@ -216,9 +229,9 @@ spec:
       taskRef:
         params:
         - name: name
-          value: buildah-oci-ta
+          value: buildah-remote-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-buildah-oci-ta:0.9@sha256:8ece4568c88f83fb129272634f100bc1ad117e1c3d9c2432b33e00fe2ada3a3b
+          value: quay.io/konflux-ci/tekton-catalog/task-buildah-remote-oci-ta:0.9@sha256:1302dbf65547d9ce065b4947f6217b7d3daa06dfd4542cbaa3e42438c1a08b0e
         - name: kind
           value: task
         resolver: bundles
@@ -234,11 +247,11 @@ spec:
         value: $(params.build-image-index)
       - name: IMAGES
         value:
-        - $(tasks.build-container.results.IMAGE_URL)@$(tasks.build-container.results.IMAGE_DIGEST)
+        - $(tasks.build-images.results.IMAGE_REF[*])
       - name: BUILDAH_FORMAT
         value: $(params.buildah-format)
       runAfter:
-      - build-container
+      - build-images
       taskRef:
         params:
         - name: name
@@ -297,6 +310,11 @@ spec:
         values:
         - "false"
     - name: clair-scan
+      matrix:
+        params:
+        - name: image-platform
+          value:
+          - $(params.build-platforms[*])
       params:
       - name: image-digest
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
@@ -319,6 +337,11 @@ spec:
         values:
         - "false"
     - name: ecosystem-cert-preflight-checks
+      matrix:
+        params:
+        - name: platform
+          value:
+          - $(params.build-platforms[*])
       params:
       - name: image-url
         value: $(tasks.build-image-index.results.IMAGE_URL)
@@ -365,6 +388,11 @@ spec:
         values:
         - "false"
     - name: clamav-scan
+      matrix:
+        params:
+        - name: image-arch
+          value:
+          - $(params.build-platforms[*])
       params:
       - name: image-digest
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
