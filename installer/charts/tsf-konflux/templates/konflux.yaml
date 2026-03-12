@@ -38,12 +38,15 @@ metadata:
 spec:
   imageController:
     enabled: {{ $imageControllerEnabled }}
+  telemetry:
+    enabled: true
   info:
     spec:
       clusterConfig:
         data:
           enableKeylessSigning: true
           defaultOIDCIssuer: https://kubernetes.default.svc
+          buildIdentityRegexp: "^https://kubernetes.io/namespaces/[a-z0-9-]+-tenant/serviceaccounts/build-pipeline-[a-z0-9-]+$"
           fulcioInternalUrl: {{ $fulcioInternalUrl | quote }}
           fulcioExternalUrl: {{ $fulcioExternalUrl | quote }}
           rekorInternalUrl: {{ $rekorInternalUrl | quote }}
