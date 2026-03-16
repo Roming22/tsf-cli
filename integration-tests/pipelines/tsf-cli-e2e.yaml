@@ -27,10 +27,14 @@ spec:
     - name: konflux-test-infra-secret
       description: The name of secret where testing infrastructures credentials are stored.
       type: string
+    - name: target-branch
+      description: The branch to tag the image with.
+      type: string
+      default: "main"
     - name: tsf-cli-image
       type: string
       description: "Image from where the `tsf-cli` binary will be extracted (from path /usr/local/bin)."
-      default: "quay.io/redhat-user-workloads/rhtap-shared-team-tenant/tsf-cli:latest"
+      default: "quay.io/redhat-user-workloads/rhtap-shared-team-tenant/tsf-cli:$(params.target-branch)"
     - name: tsf-cli-repo-url
       description: Repository URL used to resolve integration test tasks/pipelines from this repo.
       type: string

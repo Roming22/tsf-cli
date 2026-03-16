@@ -60,6 +60,7 @@ spec:
         pr_number="$(jq -r '.git.pull_request_number // empty' <<< "${JOB_SPEC}")"
         event_type="$(jq -r '.event_type // .git.event_type // empty' <<< "${JOB_SPEC}")"
         tsf_cli_image="$(jq -r '.container_image // empty' <<< "${JOB_SPEC}")"
+        target_branch="$(jq -r '.git.target_repo_branch // empty' <<< "${JOB_SPEC}")"
 
         printf "%s" "${url_repository}" > /shared/url-repository
         printf "%s" "${url_org}" > /shared/url-org
@@ -68,6 +69,7 @@ spec:
         printf "%s" "${pr_number}" > /shared/pr-number
         printf "%s" "${event_type}" > /shared/event-type
         printf "%s" "${tsf_cli_image}" > /shared/tsf-cli-image
+        printf "%s" "${target_branch}" > /shared/target-branch
 
         # Debug shared values to simplify failure investigation.
         # Auto-discover /shared files so newly added shared fields are logged automatically.
@@ -145,6 +147,7 @@ spec:
         PR_NUMBER="$(cat /shared/pr-number)"
         EVENT_TYPE="$(cat /shared/event-type)"
         TSF_CLI_IMAGE="$(cat /shared/tsf-cli-image)"
+        TARGET_BRANCH="$(cat /shared/target-branch)"
 
         pipeline_url="https://raw.githubusercontent.com/${URL_ORG}/${URL_REPOSITORY}/${GIT_REVISION}/integration-tests/pipelines/tsf-cli-e2e.yaml"
         echo "Starting tsf-cli-e2e pipeline from ${pipeline_url} for OCP version ${OCP_VERSION}"
@@ -159,6 +162,7 @@ spec:
           "--param" "replicas=${OCP_REPLICAS}"
           "--param" "tsf-cli-repo-url=${GIT_URL}"
           "--param" "tsf-cli-revision=${GIT_REVISION}"
+          "--param" "target-branch=${TARGET_BRANCH}"
           "--use-param-defaults"
           "--labels" "appstudio.openshift.io/component=${KONFLUX_COMPONENT_NAME}"
           "--labels" "appstudio.openshift.io/application=${KONFLUX_APPLICATION_NAME}"
