@@ -3,7 +3,7 @@ module github.com/redhat-appstudio/tsf-cli
 go 1.25.7
 
 require (
-	github.com/redhat-appstudio/helmet v0.0.0-20260311202156-6523e6eeb4d3
+	github.com/redhat-appstudio/helmet v0.0.0-20260319215325-e665a08127fc
 	golang.org/x/term v0.41.0
 )
 
