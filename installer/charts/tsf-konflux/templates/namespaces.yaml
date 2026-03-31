@@ -5,3 +5,8 @@ kind: Namespace
 metadata:
   name: {{ . }}
 {{- end }}
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: default-tenant

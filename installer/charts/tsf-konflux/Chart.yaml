@@ -8,4 +8,4 @@ appVersion: "0.0"
 annotations:
   helmet.redhat-appstudio.github.com/product-name: Konflux
   helmet.redhat-appstudio.github.com/depends-on: tsf-openshift, tsf-subscriptions, tsf-pipelines, tsf-tas, tsf-tpa, tsf-iam
-  helmet.redhat-appstudio.github.com/integrations-required: quay
+  helmet.redhat-appstudio.github.com/integrations-required: (github || gitlab) && quay

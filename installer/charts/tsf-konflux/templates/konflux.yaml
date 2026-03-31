@@ -1,10 +1,3 @@
-{{- $ghSecretObj := (lookup "v1" "Secret" .Values.konflux.tsf.namespace "tsf-github-integration") | default dict -}}
-{{- $secretData := (get $ghSecretObj "data") | default dict -}}
-{{- $applicationURL := "" -}}
-{{- if $secretData }}
-  {{- $applicationURL = (get $secretData "htmlURL") | b64dec | toString -}}
-{{- end }}
-
 {{- /* Lookup OIDC integration secret to get URLs */ -}}
 {{- $oidcSecretObj := (lookup "v1" "Secret" .Values.konflux.tsf.namespace "tsf-trustificationauth-integration") | default dict -}}
 {{- $secretData := required (printf "Secret 'tsf-trustificationauth-integration' not found in namespace '%s'" .Values.konflux.tsf.namespace) (get $oidcSecretObj "data") | default dict -}}
@@ -75,8 +68,12 @@ spec:
           trustifyServerExternalUrl: {{ $trustifyUrl | quote }}
       publicInfo:
         integrations:
+{{- $ghSecretObj := (lookup "v1" "Secret" .Values.konflux.tsf.namespace "tsf-github-integration") | default dict -}}
+{{- $secretData := (get $ghSecretObj "data") | default dict -}}
+{{- if $secretData }}
           github:
-            application_url: {{ $applicationURL | quote }}
+            application_url: {{ get $secretData "htmlURL" | b64dec | toString | quote }}
+{{- end }}
           sbom_server:
             url: "{{ $trustifyUrl }}/sbom/content/<PLACEHOLDER>"
             sbom_sha: "{{ $trustifyUrl }}/sboms/<PLACEHOLDER>"
