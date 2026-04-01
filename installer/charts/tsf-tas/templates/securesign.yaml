@@ -23,10 +23,6 @@ spec:
       organizationName: {{ $secureSign.fulcio.certificate.organizationName }}
     config:
       OIDCIssuers:
-        - Issuer: "{{ $secureSign.fulcio.oidc.issuerURL }}"
-          IssuerURL: "{{ $secureSign.fulcio.oidc.issuerURL }}"
-          ClientID: {{ $secureSign.fulcio.oidc.clientID }}
-          Type: email
         - ClientID: sigstore
           Issuer: {{ $issuer }}
           IssuerURL: {{ $issuer }}

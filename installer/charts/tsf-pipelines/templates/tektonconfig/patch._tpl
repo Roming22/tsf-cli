@@ -1,10 +1,8 @@
 {{- define "pipelines.TektonConfigPatch" -}}
-  {{- $rekor_url := "" }}
-  {{- $secretObj := (lookup "v1" "Secret" .Release.Namespace "tsf-tas-integration") | default dict -}}
-  {{- $secretData := (get $secretObj "data") | default dict -}}
-  {{- if $secretData }}
-    {{- $rekor_url = $secretData.rekor_url | b64dec }}
-  {{- end }}
+  {{- $tasSecretObj := (lookup "v1" "Secret" .Values.pipelines.tsf.namespace "tsf-tas-integration") | default dict -}}
+  {{- $secretData := required (printf "Secret 'tsf-tas-integration' not found in namespace '%s'" .Values.pipelines.tsf.namespace) (get $tasSecretObj "data") | default dict -}}
+  {{- $fulcio_url := required (printf "fulcio_url not found in secret 'tsf-tas-integration' in namespace '%s'" .Values.pipelines.tsf.namespace) (get $secretData "fulcio_url") | b64dec | toString -}}
+  {{- $rekor_url := required (printf "rekor_url not found in secret 'tsf-tas-integration' in namespace '%s'" .Values.pipelines.tsf.namespace) (get $secretData "rekor_url") | b64dec | toString -}}
 metadata:
   annotations:
     meta.helm.sh/release-name: {{ .Chart.Name }}
@@ -13,7 +11,9 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 spec:
   chain:
-    generateSigningSecret: true
+    signers.x509.fulcio.address: {{ $fulcio_url }}
+    signers.x509.fulcio.enabled: true
+    signers.x509.identity.token.file: /var/run/sigstore/cosign/oidc-token
     transparency.enabled: 'true'
     transparency.url: {{ $rekor_url }}
   platforms:
