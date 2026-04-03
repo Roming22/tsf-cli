@@ -38,6 +38,15 @@ metadata:
 spec:
   imageController:
     enabled: true
+{{- $quaySecretObj := (lookup "v1" "Secret" .Values.konflux.tsf.namespace "tsf-quay-integration") -}}
+{{- $secretData := (required "Secret tsf-quay-integration not found in namespace" (get $quaySecretObj "data")) -}}
+{{- $quayUrl := (required "url field not found in secret" (get $secretData "url")) | b64dec | toString -}}
+{{- if ne $quayUrl "https://quay.io" }}
+    spec:
+      quayCABundle:
+        configMapName: quay-ca-bundle
+        key: ca-bundle.crt
+{{- end }}
   telemetry:
     enabled: true
   info:
