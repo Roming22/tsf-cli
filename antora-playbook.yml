@@ -1,5 +1,5 @@
 site:
-  title: Trusted Software Factory
+  title: Trusted Software Factory Documentation
   start_page: tsf::index.adoc
 
 content:
@@ -12,6 +12,7 @@ ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
     snapshot: true
+  supplemental_files: docs/supplemental-ui
 
 output:
   dir: build/site
