@@ -1,6 +1,6 @@
 # Preparing to install Trusted Software Factory
 
-Before installing Trusted Software Factory (TSF), prepare your environment. Verify that your cluster meets the requirements, create accounts on GitHub and Quay.io, and collect all credentials into an environment file.
+Before installing Trusted Software Factory (TSF), prepare your environment. Verify that your cluster meets the requirements, create accounts on GitHub and Quay, and collect all credentials into an environment file.
 
 ## Prerequisites
 
@@ -17,9 +17,10 @@ Before installing Trusted Software Factory (TSF), prepare your environment. Veri
 
 TSF supports GitHub and GitLab as source control management systems. You need one of the following:
 
-**GitHub:**
+**GitHub** (only the community github.com is supported):
 
-- You have a GitHub organization. If you do not have one, [create a test organization](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch) before proceeding.
+- You have a GitHub organization on github.com with bidirectional network connectivity to the OCP cluster. The cluster must reach github.com, and github.com must send webhook events to the cluster.
+- If you do not have an organization, [create a test organization](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch) before proceeding.
 - You can create a GitHub App in your organization. The installer creates the GitHub App automatically, which requires the following permissions:
   - Read access to members, metadata, and organization plan
   - Read and write access to administration, checks, code, issues, pull requests, and workflows
@@ -34,7 +35,7 @@ TSF supports GitHub and GitLab as source control management systems. You need on
 
 ### Artifact registry requirements
 
-- You have a Quay.io account with access to an organization. Currently, only quay.io is supported.
+- You have a Quay registry account with access to an organization. Both quay.io and local Quay instances are supported.
 
 ### Local system requirements
 
@@ -45,36 +46,14 @@ TSF supports GitHub and GitLab as source control management systems. You need on
 
 ## Create a Quay organization and OAuth token
 
-Create a Quay.io organization and generate an OAuth token. The TSF installer uses this token to create repositories for your built container images.
+Create a Quay organization and generate an OAuth token. The TSF installer uses this token to create repositories for your built container images.
 
-### Steps
+Follow the Quay documentation to complete these steps:
 
-1. Log in to [quay.io](https://quay.io).
+1. [Create an organization](https://docs.quay.io/guides/create-org.html) in your Quay registry.
+2. [Create an OAuth application](https://docs.quay.io/api/) within the organization and generate an access token with all permission scopes.
 
-2. If you do not already have a Quay.io organization, create one:
-   1. On the Quay.io homepage, click **Create New Organization**.
-   2. Enter a name for the organization, for example, `tsf-install`.
-   3. Click **Create Organization**.
-
-3. Navigate to your organization page and click the **Applications** icon in the left navigation.
-
-4. Click **Create New Application** and enter a name for the application, for example, `tsf`.
-
-5. Click the name of the newly created application.
-
-6. Click **Generate Token**.
-
-7. Select all permission scopes.
-
-8. Click **Generate Access Token**.
-
-9. Click **Authorize Application**.
-
-10. Copy the access token and save it securely. Use this token in the next step when preparing the environment file.
-
-### Verification
-
-The page displays the access token. Copy and save it in a secure location before closing the page.
+Copy the access token and save it securely. Use this token in the next step when preparing the environment file.
 
 ## Prepare the environment file
 
@@ -93,10 +72,10 @@ Create an environment file that contains the credentials and configuration for y
    OCP__USERNAME=<your_cluster_admin_username>
    OCP__PASSWORD=<your_cluster_admin_password>
 
-   # quay.io
+   # Quay registry
    QUAY__API_TOKEN=<your_quay_oauth_token>
    QUAY__ORG=<your_quay_organization>
-   QUAY__URL=https://quay.io
+   QUAY__URL=<your_quay_url>
    ```
 
 2. Replace each placeholder with the values from your environment:
@@ -109,7 +88,7 @@ Create an environment file that contains the credentials and configuration for y
    | `OCP__PASSWORD` | The password for the cluster administrator user. |
    | `QUAY__API_TOKEN` | The OAuth token you generated for your Quay organization. |
    | `QUAY__ORG` | The name of the Quay organization that the token provides access to. |
-   | `QUAY__URL` | The full URL of the Quay registry. Use `https://quay.io`. |
+   | `QUAY__URL` | The full URL of the Quay registry. For example: `https://quay.io`. |
 
 3. Save the file.
 
