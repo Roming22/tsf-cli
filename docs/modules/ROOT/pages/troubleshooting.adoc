@@ -1,0 +1,5 @@
+= Troubleshooting {TSFShortName} installation
+
+// TODO: Content from docs/troubleshooting.md after PR #124 merges.
+// Covers: Quay token errors, Cert-Manager conflicts, RHTPA URL issues,
+// deployment hangs, browser open failures.

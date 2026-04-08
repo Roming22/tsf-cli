@@ -1,0 +1,5 @@
+= Preparing to install {TSFShortName}
+
+// TODO: Content from docs/preparing-to-install.md after PR #118 merges.
+// Covers: cluster requirements, source control requirements, artifact registry,
+// local system requirements, Quay organization and OAuth token, environment file.

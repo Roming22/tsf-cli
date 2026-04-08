@@ -1,0 +1,5 @@
+= Installing {TSFShortName}
+
+// TODO: Content from docs/installing.md after PR #119 merges.
+// Covers: starting installer container, configuring cluster, GitHub integration,
+// GitLab integration, Quay integration, deploying TSF.

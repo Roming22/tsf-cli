@@ -1,0 +1,5 @@
+= Getting started with {TSFShortName}
+
+// TODO: Content from docs/getting-started.md after PR #121 merges.
+// Covers: logging in, creating application, creating component, configuring release,
+// triggering release, verifying build artifacts.

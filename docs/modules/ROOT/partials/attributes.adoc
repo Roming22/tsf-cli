@@ -1,0 +1,14 @@
+// Product attributes for TSF documentation
+// These supplement the attributes defined in antora.yml
+
+:TSFName: Trusted Software Factory
+:TSFShortName: TSF
+:TSFCli: tsf
+:TSFInstallerImage: quay.io/redhat-ads/tsf-cli:unstable
+:OCPName: OpenShift Container Platform
+:OCPShortName: OCP
+:OCPVersion: 4.20
+:OCPCli: oc
+:KonfluxName: Konflux
+:RHTASName: Red Hat Trusted Artifact Signer
+:RHTPAName: Red Hat Trusted Profile Analyzer

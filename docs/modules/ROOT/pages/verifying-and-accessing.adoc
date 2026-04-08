@@ -1,0 +1,4 @@
+= Verifying and accessing {TSFShortName}
+
+// TODO: Content from docs/verifying-and-accessing.md after PR #120 merges.
+// Covers: accessing Konflux UI, deployed components table.

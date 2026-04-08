@@ -1,0 +1,26 @@
+name: tsf
+title: Trusted Software Factory
+version: ~
+nav:
+  - modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    icons: font
+    source-language: asciidoc
+    source-highlighter: highlightjs
+    idseparator: '-'
+    idprefix: ''
+    experimental: ''
+    # Product attributes
+    TSFName: 'Trusted Software Factory'
+    TSFShortName: 'TSF'
+    TSFCli: 'tsf'
+    TSFInstallerImage: 'quay.io/redhat-ads/tsf-cli:unstable'
+    OCPName: 'OpenShift Container Platform'
+    OCPShortName: 'OCP'
+    OCPVersion: '4.20'
+    OCPCli: 'oc'
+    KonfluxName: 'Konflux'
+    RHTASName: 'Red Hat Trusted Artifact Signer'
+    RHTPAName: 'Red Hat Trusted Profile Analyzer'
