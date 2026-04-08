@@ -1,5 +1,128 @@
 = Getting started with {TSFShortName}
 
-// TODO: Content from docs/getting-started.md after PR #121 merges.
-// Covers: logging in, creating application, creating component, configuring release,
-// triggering release, verifying build artifacts.
+After installing and verifying {TSFShortName}, onboard your first application to see the secure build pipeline in action. This guide walks through the developer workflow: creating an application, onboarding a component from a Git repository, triggering a build, configuring a release, and verifying signed artifacts.
+
+**Persona:** Developer — builds and ships applications using the software factory that the Platform Engineer installed.
+
+== Prerequisites
+
+* {TSFShortName} is xref:installing.adoc[installed] and xref:verifying-and-accessing.adoc[verified] on your {OCPShortName} cluster.
+* You can log in to the {KonfluxName} UI.
+* You have a Git repository with source code that you want to build. If you do not have one, fork the link:https://github.com/konflux-ci/sample-component-golang[sample-component-golang] repository.
+* Your Git provider integration (GitHub or GitLab) is configured as part of the xref:installing.adoc[installation].
+
+== Log in to the {KonfluxName} UI
+
+. Open the {KonfluxName} UI URL in a web browser.
+
+. Log in with your {OCPShortName} credentials.
+
+. Authorize the `dex-client` service account when prompted.
+
+The {KonfluxName} dashboard displays the *Get started with {KonfluxName}* landing page.
+
+== Create an application
+
+An application in {KonfluxName} is a logical grouping of one or more components that are built, tested, and released together.
+
+. In the {KonfluxName} UI, click *Create an application*.
+
+. Enter a name for your application, for example, `my-app`.
+
+. Click *Create application*.
+
+For more details, see link:https://konflux-ci.dev/docs/building/creating/#creating-an-application[Creating an application] in the {KonfluxName} documentation.
+
+== Create a component
+
+A component maps to a single Git repository and branch. When you create a component, {KonfluxName} onboards the repository and configures the build pipeline.
+
+. From your application page, click *Add component*.
+
+. Enter the Git repository URL for your source code. For example: `\https://github.com/konflux-ci/sample-component-golang`.
+
+. Select the branch to build from.
+
+. Review the detected build pipeline and click *Create component*.
+
+For more details, see link:https://konflux-ci.dev/docs/building/creating/#with-the-ui-2[Creating a component] in the {KonfluxName} documentation.
+
+=== What happens after you create a component
+
+After you create a component, {KonfluxName} automatically:
+
+. **Sends a pull request** to your Git repository. This PR adds a build pipeline definition (`.tekton/` directory) that triggers on pull request and push events targeting the onboarded branch.
+
+. **Configures a default integration test pipeline.** This pipeline runs automatically after each build to evaluate the artifacts against the configured policy. The integration test definition is stored as a Custom Resource in OpenShift and is not visible in your Git repository.
+
+. **Creates CI checks** on the pull request (GitHub checks or GitLab webhooks, depending on your Git provider). Two checks appear:
+* One for the build pipeline status
+* One for the integration test pipeline status
++
+You can click through to view logs and additional information.
+
+IMPORTANT: Do not merge this pull request yet. Configure a release first so you can see the full end-to-end flow.
+
+== Configure a release
+
+By default, onboarded components are not automatically released. A Platform Engineer must configure the release criteria and destination before artifacts can be released.
+
+The release configuration process involves creating various Custom Resources in OpenShift. Use the link:https://github.com/konflux-ci/konflux-ci/blob/main/operator/hack/setup-release.sh[setup-release.sh wrapper script] to simplify this process.
+
+Log in to the {OCPShortName} cluster as the Platform Engineer (cluster admin) and run the script:
+
+[source,bash]
+----
+./setup-release.sh --application <application_name> --component <component_name>
+----
+
+This script creates the necessary release plan, release policy, and release pipeline resources.
+
+== Trigger a release
+
+After you create a component and configure a release, releases happen automatically from push events.
+
+. Go to your Git repository and merge the pull request that {KonfluxName} created.
+
+. Merging triggers a push event (commit added to the target branch), which starts another build pipeline.
+
+. After the build pipeline succeeds, the integration test pipeline runs automatically.
+
+. After both pipelines pass, navigate to the *Releases* tab in the {KonfluxName} UI. A release starts automatically.
+
+. Track the release progress in the UI. At the end of the release, the image is available in a Quay repository.
+
+== Verify the build artifacts
+
+After the build and release complete, verify the security artifacts that {TSFShortName} produced:
+
+. **Signed container image in Quay:**
+* Navigate to your Quay organization. A new repository has been created with the built container image.
+* The image is signed using {RHTASName}.
+
+. **SLSA provenance and attestation:**
+* The build produces SLSA Level 3 provenance that records how the image was built.
+* Attestations are signed and stored alongside the image.
+
+. **SBOM in {RHTPAName}:**
+* Open the {RHTPAName} UI.
+* The software bill of materials (SBOM) is available, showing all packages and dependencies.
+* The UI displays vulnerability reports and license information.
+
+. **Signature verification:**
++
+Verify the image signature using `cosign`:
++
+[source,bash]
+----
+cosign tree <image-reference>
+----
++
+View the Rekor transparency log entry for the signing event.
+
+== Next steps
+
+* **Onboard more components** to build your full application stack.
+* **Customize the build pipeline** by editing the `.tekton/` files in your repository.
+* **Configure policy** using Conforma to enforce your organization's security requirements.
+* **Configure additional integration tests** to validate your builds against custom criteria.

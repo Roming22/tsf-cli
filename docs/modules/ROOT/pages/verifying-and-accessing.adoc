@@ -1,4 +1,104 @@
 = Verifying and accessing {TSFShortName}
 
-// TODO: Content from docs/verifying-and-accessing.md after PR #120 merges.
-// Covers: accessing Konflux UI, deployed components table.
+After the deployment completes, access the service UIs and verify that all {TSFShortName} components are running correctly. If you encounter issues, see xref:troubleshooting.adoc[Troubleshooting {TSFShortName} installation].
+
+== Access the {KonfluxName} UI
+
+Access the {KonfluxName} web interface to verify that the deployment succeeded and to begin onboarding applications to {TSFShortName}.
+
+=== Prerequisites
+
+* You have completed the {TSFShortName} deployment.
+* You have the {KonfluxName} UI URL from the deployment output.
+
+=== Steps
+
+. Open the {KonfluxName} UI URL in a web browser.
++
+If you did not save the URL from the deployment output, find it through the {OCPShortName} Routes:
++
+[source,bash]
+----
+oc get routes -n konflux-ui
+----
++
+Open the URL in the `HOST/PORT` column.
+
+. On the {OCPShortName} login page, enter your credentials and click *Log in*.
+
+. On the *Authorize Access* page, the `dex-client` service account in the `konflux-ui` project requests permission to access your account. Review the requested permission:
+* `user:info` — read-only access to your user information, including username, identities, and group membership.
+
+. Click *Allow selected permissions*.
+
+=== Verification
+
+The {KonfluxName} dashboard loads and displays the *Get started with {KonfluxName}* landing page with options to view namespaces and access the Release Monitor Board.
+
+== Deployed components
+
+The {TSFShortName} installer deploys the following components to your {OCPShortName} cluster. Each component runs in its own namespace and is managed by a Helm chart.
+
+[cols="1,1,1,2", options="header"]
+|===
+| Component | Namespace | Helm chart | Description
+
+| Red Hat Cert-Manager Operator
+| `cert-manager-operator`
+| `tsf-cert-manager`
+| Manages application certificate lifecycle.
+
+| Red Hat build of Keycloak
+| `tssc-keycloak`
+| `tsf-infrastructure`
+| Provides identity management and single sign-on.
+
+| {KonfluxName} Operator
+| `konflux-operator`
+| `tsf-subscriptions`
+| Provides the custom resource definitions for the build system.
+
+| {KonfluxName} UI
+| `konflux-ui`
+| `tsf-konflux`
+| Provides the web interface for managing applications and builds.
+
+| Red Hat OpenShift Pipelines
+| Managed subscription
+| `tsf-subscriptions`
+| Provides Tekton-based CI/CD pipelines.
+
+| {RHTASName}
+| `tsf-tas`
+| `tsf-tas`
+| Provides cryptographic signing and verification of software artifacts using Fulcio, Rekor, and TUF services.
+
+| {RHTPAName}
+| `tsf-tpa`
+| `tsf-infrastructure`
+| Analyzes software bills of materials (SBOMs) and vulnerability data.
+
+| Quay integration
+| `tssc-quay`
+| Integration configuration
+| Stores credentials for pushing container images to Quay.io.
+|===
+
+The installer also creates the following supporting namespaces:
+
+* `openshift-storage`
+* `rhbk-operator`
+* `rhtpa-operator`
+
+The `tsf-config` ConfigMap in the `tsf` namespace controls which components are installed. Each component has an `enabled` flag and a `manageSubscription` property. Set `manageSubscription` to `false` for any component that is already installed on the cluster.
+
+To view the complete ConfigMap structure:
+
+[source,bash]
+----
+oc get configmap tsf-config -n tsf -o yaml
+----
+
+== Next step
+
+Proceed to xref:getting-started.adoc[Getting started with {TSFShortName}] to onboard your first application.

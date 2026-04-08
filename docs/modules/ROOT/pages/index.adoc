@@ -1,3 +1,22 @@
 = {TSFName}
 
-// TODO: Add landing page content — overview of TSF, links to installation phases and getting started.
+{TSFName} ({TSFShortName}) is a deployable instance of link:https://konflux-ci.dev[{KonfluxName}] that brings a secure software supply chain to your {OCPName} cluster. {TSFShortName} integrates {KonfluxName} with {RHTASName} and {RHTPAName} to provide end-to-end build, sign, and verify workflows for container images.
+
+== What {TSFShortName} provides
+
+* **Secure build pipelines** — Tekton-based CI/CD pipelines that produce signed container images with SLSA Level 3 provenance.
+* **Artifact signing** — Automatic cryptographic signing of container images using {RHTASName} (Fulcio, Rekor, TUF).
+* **Software bill of materials** — SBOM generation and vulnerability analysis through {RHTPAName}.
+* **Identity management** — Red Hat build of Keycloak for single sign-on and access control.
+* **Container registry integration** — Push built images to your Quay organization with automatic repository creation.
+
+== Get started
+
+Follow these guides in order to install and use {TSFShortName}:
+
+. xref:preparing-to-install.adoc[Preparing to install {TSFShortName}] — Verify cluster requirements, set up accounts, and prepare credentials.
+. xref:installing.adoc[Installing {TSFShortName}] — Start the installer, configure integrations, and deploy all services.
+. xref:verifying-and-accessing.adoc[Verifying and accessing {TSFShortName}] — Access the {KonfluxName} UI and review deployed components.
+. xref:getting-started.adoc[Getting started with {TSFShortName}] — Onboard your first application and verify the secure build pipeline.
+
+If you encounter issues during installation, see xref:troubleshooting.adoc[Troubleshooting {TSFShortName} installation].
