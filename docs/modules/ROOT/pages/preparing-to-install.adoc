@@ -50,7 +50,7 @@ Create a Quay organization and generate an OAuth token. The {TSFShortName} insta
 
 Follow the Quay documentation to complete these steps:
 
-. link:https://docs.quay.io/guides/create-org.html[Create an organization] in your Quay registry.
+. link:https://docs.quay.io/glossary/organizations.html[Create an organization] in your Quay registry.
 . link:https://docs.quay.io/api/[Create an OAuth application] within the organization and generate an access token with all permission scopes.
 
 Copy the access token and save it securely. Use this token in the next step when preparing the environment file.
