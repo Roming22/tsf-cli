@@ -1325,6 +1325,20 @@ spec:
           - offline_access
           - microprofile-jwt
         protocol: openid-connect
+        protocolMappers:
+          - name: "subject-mapper"
+            protocol: "openid-connect"
+            protocolMapper: "oidc-usermodel-property-mapper"
+            consentRequired: false
+            config:
+              user.attribute: "id"
+              claim.name: "sub"
+              jsonType.label: "String"
+              id.token.claim: "true"
+              access.token.claim: "true"
+              userinfo.token.claim: "true"
+              introspection.token.claim: "true"
+              lightweight.claim: "false"
         publicClient: true
         redirectUris: {{
           required ".frontendRedirectUris is required"
@@ -1759,7 +1773,14 @@ spec:
       - jboss-logging
     failureFactor: 30
     groups: []
-    identityProviderMappers: []
+    identityProviderMappers:
+      - name: "openshift-sub-mapper"
+        identityProviderAlias: {{ .Values.iam.oathClientAlias | quote }}
+        identityProviderMapper: "openshift-v4-user-attribute-mapper"
+        config:
+          syncMode: "IMPORT"
+          jsonField: "sub"
+          userAttribute: "sub"
     identityProviders:
       - alias: {{ .Values.iam.oathClientAlias }}
         config:
