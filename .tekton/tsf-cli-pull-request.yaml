@@ -16,7 +16,6 @@ metadata:
         || x.matches('.*\\.md$')
         || x.matches('^\\.gitignore$')
         || x.matches('^LICENSE\\.txt$')
-        || x.matches('^hack/')
         || x.matches('^scripts/')
       )
   creationTimestamp: null
@@ -426,6 +425,56 @@ spec:
         operator: in
         values:
         - "false"
+    - name: govulncheck
+      params:
+      - name: SOURCE_ARTIFACT
+        value: $(tasks.prefetch-dependencies.results.SOURCE_ARTIFACT)
+      runAfter:
+      - build-image-index
+      taskSpec:
+        params:
+        - name: SOURCE_ARTIFACT
+          description: The trusted artifact URI containing the source code.
+          type: string
+        steps:
+        - name: use-trusted-artifact
+          image: quay.io/redhat-appstudio/build-trusted-artifacts:latest@sha256:601e0999ae062e5ee666538d651af7893a75e415b7952c85caa8a4452501029a
+          args:
+          - use
+          - $(params.SOURCE_ARTIFACT)=/var/workdir/source
+          volumeMounts:
+          - mountPath: /var/workdir
+            name: workdir
+        - name: govulncheck
+          image: registry.access.redhat.com/ubi10/go-toolset:1.25.8
+          workingDir: /var/workdir/source
+          script: |
+            #!/usr/bin/env bash
+            set -euo pipefail
+
+            # Trusted artifact extraction changes ownership; mark as safe
+            # for git operations used by Makefile (VERSION, COMMIT_ID).
+            git config --global --add safe.directory /var/workdir/source
+
+            # Install jq (static binary, no package manager needed)
+            JQ_VERSION="1.7.1"
+            curl -sSfL \
+              "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-amd64" \
+              -o /tmp/jq && chmod +x /tmp/jq
+            export PATH="/tmp:${PATH}"
+
+            make security
+          volumeMounts:
+          - mountPath: /var/workdir
+            name: workdir
+        volumes:
+        - emptyDir: {}
+          name: workdir
+      when:
+      - input: $(params.skip-checks)
+        operator: in
+        values:
+        - "false"
     - name: sast-coverity-check
       params:
       - name: image-digest
@@ -611,6 +660,13 @@ spec:
       optional: true
     - name: netrc
       optional: true
+  taskRunSpecs:
+  - pipelineTaskName: govulncheck
+    computeResources:
+      requests:
+        memory: 2Gi
+      limits:
+        memory: 8Gi
   taskRunTemplate:
     serviceAccountName: build-pipeline-tsf-cli
   workspaces:

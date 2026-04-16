@@ -40,6 +40,11 @@ VERSION ?= $(shell \
 # Commit will be set at build time via git commit hash
 COMMIT_ID ?= $(shell git rev-parse HEAD)
 
+# Modules to ignore in govulncheck (space-separated).
+GOVULNCHECK_IGNORE_MODULES ?= stdlib toolchain
+# Vulnerability IDs to ignore in govulncheck (space-separated).
+GOVULNCHECK_IGNORE_IDS ?= GO-2026-4514
+
 .EXPORT_ALL_VARIABLES:
 
 .DEFAULT_GOAL := build
@@ -61,6 +66,8 @@ help:
 	@echo "  image                  Builds the container image (uses Podman by default)"
 	@echo "  image-podman           Builds the container image with Podman"
 	@echo "  lint                   Runs golangci-lint on the codebase"
+	@echo "  security               Runs all security checks (govulncheck)"
+	@echo "  govulncheck            Runs Go vulnerability check"
 	@echo ""
 	@echo "  * = default when running 'make' with no target"
 
@@ -124,3 +131,18 @@ lint:
 	@which golangci-lint &>/dev/null || \
 		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest &>/dev/null
 	golangci-lint run ./...
+
+#
+# Security
+#
+
+# Runs Go vulnerability check via govulncheck. GOFLAGS is cleared to prevent
+# "-v" verbose build output from corrupting the JSON stream parsed by jq.
+.PHONY: govulncheck
+govulncheck: GOFLAGS =
+govulncheck:
+	@hack/govulncheck.sh
+
+# Runs all security checks.
+.PHONY: security
+security: govulncheck
