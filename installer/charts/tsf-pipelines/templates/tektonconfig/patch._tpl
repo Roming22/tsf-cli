@@ -5,6 +5,8 @@
   {{- $fulcio_url := required (printf "Neither fulcio_service_url nor fulcio_url found in secret 'tsf-tas-integration' in namespace '%s'" .Values.pipelines.tsf.namespace) $fulcio_raw | b64dec | toString -}}
   {{- $rekor_raw := (get $secretData "rekor_service_url") | default (get $secretData "rekor_url") -}}
   {{- $rekor_url := required (printf "Neither rekor_service_url nor rekor_url found in secret 'tsf-tas-integration' in namespace '%s'" .Values.pipelines.tsf.namespace) $rekor_raw | b64dec | toString -}}
+  {{- /* Circular dependency. Helmet does not support them at the moment, so we hard code it */ -}}
+  {{- $konflux_url := printf "https://konflux-ui-%s.%s" (required "pipelines.konflux.namespace is required" .Values.pipelines.konflux.namespace) (required "pipelines.ingressDomain is required" .Values.pipelines.ingressDomain) -}}
 metadata:
   annotations:
     meta.helm.sh/release-name: {{ .Chart.Name }}
@@ -23,6 +25,12 @@ spec:
       pipelinesAsCode:
         settings:
           application-name: TSF CI
+          custom-console-name: Red Hat Konflux
+          custom-console-url: {{ $konflux_url }}
+          custom-console-url-namespace: {{ printf "%s/ns/{{ namespace }}" $konflux_url | quote }}
+          custom-console-url-pr-details: {{ printf "%s/ns/{{ namespace }}/pipelinerun/{{ pr }}" $konflux_url | quote }}
+          custom-console-url-pr-tasklog: {{ printf "%s/ns/{{ namespace }}/pipelinerun/{{ pr }}/logs/{{ task }}" $konflux_url | quote }}
+          enable-cancel-in-progress-on-pull-requests: "true"
           remember-ok-to-test: 'false'
   pruner:
     keep: 2

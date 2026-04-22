@@ -189,6 +189,9 @@ konflux:
 
 pipelines:
   namespace: {{ $pipelinesNamespace }}
+  ingressDomain: {{ $ingressDomain }}
+  konflux:
+    namespace: {{ $konflux.Namespace }}
   tsf:
     namespace: {{ .Installer.Namespace }}
 
