@@ -9,7 +9,7 @@ import (
 	buildcontrollers "github.com/konflux-ci/build-service/controllers"
 
 	"github.com/devfile/library/v2/pkg/util"
-	"github.com/google/go-github/v44/github"
+	"github.com/google/go-github/v85/github"
 	appservice "github.com/konflux-ci/application-api/api/v1alpha1"
 	"github.com/konflux-ci/e2e-tests/pkg/clients/has"
 	"github.com/konflux-ci/e2e-tests/pkg/constants"
@@ -41,7 +41,6 @@ const (
 	defaultPollingInterval  = time.Second * 2
 	snapshotPollingInterval = time.Second * 1
 	releasePollingInterval  = time.Second * 1
-
 )
 
 func tsfDemoSuiteDescribe(args ...interface{}) bool {
@@ -404,4 +403,3 @@ var _ = tsfDemoSuiteDescribe(ginkgo.Label(tsfTestLabel), func() {
 		})
 	})
 })
-
