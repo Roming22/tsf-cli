@@ -76,12 +76,14 @@ IMPORTANT: Do not merge this pull request yet. Configure a release first so you 
 
 By default, onboarded components are not automatically released. A Platform Engineer must configure the release criteria and destination before artifacts can be released.
 
-The release configuration process involves creating various Custom Resources in OpenShift. Use the link:https://github.com/konflux-ci/konflux-ci/blob/main/operator/hack/setup-release.sh[setup-release.sh wrapper script] to simplify this process.
+The release configuration process involves creating various Custom Resources in OpenShift. Use the link:https://github.com/konflux-ci/konflux-ci/blob/release-0.1/operator/upstream-kustomizations/cli/setup-release.sh[setup-release.sh wrapper script] to simplify this process.
 
 Log in to the {OCPShortName} cluster as the Platform Engineer (cluster admin) and run the script:
 
 [source,bash]
 ----
+curl -O https://raw.githubusercontent.com/konflux-ci/konflux-ci/refs/heads/release-0.1/operator/upstream-kustomizations/cli/setup-release.sh
+chmod +x setup-release.sh
 ./setup-release.sh --application <application_name> --component <component_name>
 ----
 
