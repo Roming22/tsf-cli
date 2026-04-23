@@ -32,6 +32,11 @@ func main() {
 	// 4. Create application with framework options (GitHub URLs via CustomURLProvider; see framework/integrations.go)
 	appIntegrations := framework.StandardIntegrations()
 	appIntegrations = framework.WithURLProvider(appIntegrations, CustomURLProvider{})
+	appIntegrations, err = framework.SelectIntegrations(appIntegrations, "github", "gitlab", "quay", "tas", "trustification")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
 	app, err := framework.NewAppFromTarball(
 		appCtx,
 		installer.InstallerTarball,
