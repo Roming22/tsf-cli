@@ -130,7 +130,11 @@ Create and install a GitHub App that enables {TSFShortName} to interact with you
 +
 [source,bash]
 ----
-tsf integration github --create --org "$GITHUB__ORG" "<my_github_app_name>"
+tsf integration github \
+  --create \
+  --org "$GITHUB__ORG" \
+  --verbose \
+  "<my_github_app_name>"
 ----
 +
 The command outputs a URL starting with `\http://localhost:8228`.
@@ -177,7 +181,8 @@ If you are using GitLab instead of GitHub, configure the GitLab integration. The
 tsf integration gitlab \
   --group="$GITLAB__GROUP" \
   --host="$GITLAB__HOST" \
-  --token="$GITLAB__TOKEN"
+  --token="$GITLAB__TOKEN" \
+  --verbose
 ----
 
 === Verification
@@ -208,7 +213,8 @@ Configure the Quay registry integration so that {TSFShortName} can push built co
 tsf integration quay \
   --organization="$QUAY__ORG" \
   --token="$QUAY__API_TOKEN" \
-  --url="$QUAY__URL"
+  --url="$QUAY__URL" \
+  --verbose
 ----
 
 NOTE: When a new component is onboarded to {KonfluxName}, a repository is automatically created in the specified Quay organization. If you are using a free quay.io account, you must manually change the visibility of new repositories to public because of account limitations. If you are using a paid quay.io account, the repositories can remain private.

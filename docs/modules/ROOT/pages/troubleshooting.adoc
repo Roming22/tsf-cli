@@ -40,7 +40,8 @@ oc delete secret tsf-quay-integration -n tsf
 tsf integration quay \
   --organization="$QUAY__ORG" \
   --token="$QUAY__API_TOKEN" \
-  --url="$QUAY__URL"
+  --url="$QUAY__URL" \
+  --verbose
 ----
 
 . Re-run the deployment:
