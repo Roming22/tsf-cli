@@ -3,13 +3,7 @@ name: Build and publish docs
 on:
   push:
     branches:
-      - main
-    paths:
-      - 'docs/**'
-      - 'antora-playbook.yml'
-  pull_request:
-    branches:
-      - main
+      - docs
     paths:
       - 'docs/**'
       - 'antora-playbook.yml'
@@ -45,13 +39,11 @@ jobs:
         run: touch build/site/.nojekyll
 
       - name: Upload artifact
-        if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/site
 
   deploy:
-    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
