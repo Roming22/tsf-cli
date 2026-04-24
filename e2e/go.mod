@@ -8,14 +8,11 @@ require (
 	github.com/konflux-ci/application-api v0.0.0-20251210122215-555a927cf6d9
 	github.com/konflux-ci/build-service v0.0.0-20240611083846-2dee6cfe6fe4
 	github.com/konflux-ci/e2e-tests v0.0.0-00010101000000-000000000000
-	github.com/konflux-ci/image-controller v0.0.0-20240530145826-3296e4996f6f
 	github.com/konflux-ci/integration-service v0.0.0-20260108133201-e2f5559a9544
 	github.com/konflux-ci/release-service v0.0.0-20260113075649-fff62d349fa9
 	github.com/onsi/ginkgo/v2 v2.27.4
 	github.com/onsi/gomega v1.39.0
 	github.com/tektoncd/pipeline v1.9.2
-	k8s.io/api v0.35.1
-	k8s.io/apimachinery v0.35.1
 	k8s.io/klog/v2 v2.130.1
 )
 
@@ -36,7 +33,6 @@ require (
 	github.com/avast/retry-go/v4 v4.3.3 // indirect
 	github.com/aws/aws-sdk-go v1.55.8 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/blendle/zapdriver v1.3.1 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.7.1 // indirect
@@ -45,8 +41,8 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chai2010/gettext-go v1.0.3 // indirect
 	github.com/cloudflare/circl v1.6.3 // indirect
-	github.com/codeready-toolchain/api v0.0.0-20231217224957-34f7cb3fcbf7 // indirect
-	github.com/codeready-toolchain/toolchain-common v0.0.0-20220523142428-2558e76260fb // indirect
+	github.com/codeready-toolchain/api v0.0.0-20260415142422-12ff40f3bdb6 // indirect
+	github.com/codeready-toolchain/toolchain-common v0.0.0-20260423153619-94789ab7b544 // indirect
 	github.com/codeready-toolchain/toolchain-e2e v0.0.0-20220525131508-60876bfb99d3 // indirect
 	github.com/conforma/crds/api v0.1.7 // indirect
 	github.com/containerd/containerd v1.7.29 // indirect
@@ -59,6 +55,7 @@ require (
 	github.com/cyphar/filepath-securejoin v0.6.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/davidmz/go-pageant v1.0.2 // indirect
+	github.com/distribution/distribution/v3 v3.0.0-20230511163743-f7717b7855ca // indirect
 	github.com/docker/cli v29.2.0+incompatible // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
 	github.com/docker/docker v28.5.2+incompatible // indirect
@@ -111,7 +108,7 @@ require (
 	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/google/pprof v0.0.0-20260106004452-d7df1bf2cac7 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.4 // indirect
@@ -120,6 +117,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
 	github.com/hashicorp/go-version v1.8.0 // indirect
+	github.com/hashicorp/golang-lru v1.0.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jmespath/go-jmespath v0.4.1-0.20220621161143-b0104c826a24 // indirect
@@ -127,6 +125,7 @@ require (
 	github.com/kevinburke/ssh_config v1.4.0 // indirect
 	github.com/klauspost/compress v1.18.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
+	github.com/konflux-ci/image-controller v0.0.0-20240530145826-3296e4996f6f // indirect
 	github.com/konflux-ci/operator-toolkit v0.0.0-20251118152634-b4f41f073069 // indirect
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de // indirect
 	github.com/magefile/mage v1.14.0 // indirect
@@ -154,7 +153,7 @@ require (
 	github.com/openshift-pipelines/pipelines-as-code v0.27.2 // indirect
 	github.com/openshift/api v0.0.0-20260318185450-1f2fa3f09f4e // indirect
 	github.com/openshift/client-go v0.0.0-20260320040014-4b5fc2cdad98 // indirect
-	github.com/openshift/library-go v0.0.0-20220525173854-9b950a41acdc // indirect
+	github.com/openshift/library-go v0.0.0-20251110200504-2685cf1242fc // indirect
 	github.com/openshift/oc v0.0.0-alpha.0.0.20220614012638-35c7eeb5274e // indirect
 	github.com/operator-framework/operator-lib v0.19.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
@@ -208,7 +207,9 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	k8s.io/api v0.35.1 // indirect
 	k8s.io/apiextensions-apiserver v0.34.3 // indirect
+	k8s.io/apimachinery v0.35.1 // indirect
 	k8s.io/cli-runtime v0.34.2 // indirect
 	k8s.io/client-go v11.0.0+incompatible // indirect
 	k8s.io/component-base v0.34.3 // indirect
