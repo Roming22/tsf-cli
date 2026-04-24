@@ -9,7 +9,7 @@ metadata:
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-cel-expression: |
       event == "push"
-      && target_branch == "main"
+      && target_branch == "release-0.1"
       && !files.all.all(x,
         x.matches('^docs/')
         || x.matches('.*\\.md$')
@@ -20,8 +20,8 @@ metadata:
       )
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: tsf-cli
-    appstudio.openshift.io/component: tsf-cli
+    appstudio.openshift.io/application: tsf-cli-0-1
+    appstudio.openshift.io/component: tsf-cli-0-1
     pipelines.appstudio.openshift.io/type: build
   name: tsf-cli-on-push
   namespace: rhtap-shared-team-tenant
