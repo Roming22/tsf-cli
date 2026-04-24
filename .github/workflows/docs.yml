@@ -1,12 +1,6 @@
-name: Build and publish docs
+name: Validate docs
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'docs/**'
-      - 'antora-playbook.yml'
   pull_request:
     branches:
       - main
@@ -16,12 +10,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   build:
@@ -40,24 +28,3 @@ jobs:
 
       - name: Build site
         run: SITE_SEARCH_PROVIDER=lunr antora --fetch antora-playbook.yml
-
-      - name: Disable Jekyll
-        run: touch build/site/.nojekyll
-
-      - name: Upload artifact
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/site
-
-  deploy:
-    if: github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
