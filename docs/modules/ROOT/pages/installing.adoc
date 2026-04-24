@@ -80,7 +80,7 @@ oc get subscription openshift-cert-manager-operator -n cert-manager-operator
 oc edit configmap tsf-config -n tsf
 ----
 +
-Locate the Cert-Manager product entry and set `manageSubscription` to `false`:
+Locate the Cert-Manager product entry and set `manageSubscription` to `auto` or `false`:
 +
 [source,yaml]
 ----
@@ -88,12 +88,28 @@ products:
   - name: Cert-Manager
     enabled: true
     properties:
-      manageSubscription: false
+      manageSubscription: auto
 ----
 
-NOTE: The {TSFShortName} installer assumes a fresh cluster. If other {TSFShortName}-managed operators are already installed (such as Red Hat OpenShift Pipelines or {RHTASName}), set `manageSubscription: false` for each pre-installed component to prevent conflicts.
+The `tsf-config` ConfigMap in the `tsf` namespace controls which components are installed. Each component has an `enabled` flag and a `manageSubscription` property. The `manageSubscription` property accepts the following values:
 
-The `tsf-config` ConfigMap in the `tsf` namespace controls which components are installed. Each component has an `enabled` flag and a `manageSubscription` property. Set `manageSubscription` to `false` for any component that is already installed on the cluster.
+[cols="1,3", options="header"]
+|===
+| Value | Behavior
+
+| `true`
+| Manage the subscription. Fails if a subscription not controlled by the tsf-subscription chart already exists.
+
+| `false`
+| Do not manage the subscription. Fails if a required subscription has not been deployed manually.
+
+| `auto`
+| Manage the subscription if it is controlled by the tsf-subscription chart or does not exist. Skip management if the subscription exists and is not controlled by tsf-subscription.
+|===
+
+TIP: Use `auto` when you are unsure whether an operator is already installed. This value handles both fresh clusters and clusters with pre-installed operators without failing.
+
+NOTE: The {TSFShortName} installer assumes a fresh cluster. If other {TSFShortName}-managed operators are already installed (such as Red Hat OpenShift Pipelines or {RHTASName}), set `manageSubscription` to `auto` or `false` for each pre-installed component to prevent conflicts.
 
 === Verification
 
