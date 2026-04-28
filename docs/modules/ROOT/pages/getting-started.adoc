@@ -19,13 +19,17 @@ After installing and verifying {TSFShortName}, onboard your first application to
 
 . Authorize the `dex-client` service account when prompted.
 
-The {KonfluxName} dashboard displays the *Get started with {KonfluxName}* landing page.
+The {KonfluxName} dashboard displays the landing page.
 
 == Create an application
 
 An application in {KonfluxName} is a logical grouping of one or more components that are built, tested, and released together.
 
-. In the {KonfluxName} UI, click *Create an application*.
+. In the {KonfluxName} UI, click *View my namespaces*.
+
+. Select your tenant namespace (for example, `default-tenant`).
+
+. Click *Create Application*.
 
 . Enter a name for your application, for example, `my-app`.
 
@@ -37,9 +41,14 @@ For more details, see link:https://konflux-ci.dev/docs/building/creating/#creati
 
 A component maps to a single Git repository and branch. When you create a component, {KonfluxName} onboards the repository and configures the build pipeline.
 
-. From your application page, click *Add component*.
+. From your application page, open the *Actions* dropdown and click *Add component*.
 
-. Enter the Git repository URL for your source code. For example: `\https://github.com/konflux-ci/sample-component-golang`.
+. Enter the Git repository URL for your source code.
++
+--
+* GitHub example: `\https://github.com/konflux-ci/sample-component-golang`
+* GitLab example: `\https://gitlab.com/<your-group>/sample-component-golang`
+--
 
 . Select the branch to build from.
 
@@ -135,7 +144,7 @@ After the build and release complete, verify the security artifacts that {TSFSho
 
 . **Signature verification:**
 +
-Verify the image signature using `cosign`:
+Verify the image signature using `cosign`. You must have `cosign` installed on your local machine (it is not included in the installer container).
 +
 [source,bash]
 ----

@@ -65,7 +65,7 @@ tsf deploy
 oc edit configmap tsf-config -n tsf
 ----
 
-Locate the Cert-Manager entry and change `manageSubscription: true` to `manageSubscription: false`. Then re-run the deployment.
+Locate the Cert-Manager entry and change `manageSubscription` to `auto` or `false`. Then re-run the deployment. See xref:installing.adoc#_configure_the_cluster[Configure the cluster] for details on `manageSubscription` values.
 
 [id="rhtpa-ui-url-is-not-accessible"]
 == {RHTPAName} UI URL is not accessible

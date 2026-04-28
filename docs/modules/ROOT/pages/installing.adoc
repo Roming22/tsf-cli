@@ -62,6 +62,8 @@ tsf config --create
 ----
 +
 This command creates a `tsf-config` ConfigMap in the `tsf` namespace. The ConfigMap contains a `config.yaml` key that lists all components with their namespaces and `manageSubscription` settings.
++
+NOTE: If the configuration already exists (for example, in a pre-provisioned environment), add the `--force` flag: `tsf config --create --force`.
 
 . Check if the Red Hat Cert-Manager Operator is already installed on the cluster:
 +
@@ -233,6 +235,8 @@ tsf integration quay \
   --verbose
 ----
 
+NOTE: If the Quay integration secret already exists (for example, in a pre-provisioned environment), you can skip this step. Verify by running `oc get secret tsf-quay-integration -n tsf`.
+
 NOTE: When a new component is onboarded to {KonfluxName}, a repository is automatically created in the specified Quay organization. If you are using a free quay.io account, you must manually change the visibility of new repositories to public because of account limitations. If you are using a paid quay.io account, the repositories can remain private.
 
 === Verification
@@ -268,13 +272,15 @@ tsf deploy
 +
 The deployment process installs 9 Helm charts sequentially, creating the following {OCPShortName} projects:
 +
-* `cert-manager-operator`
+* `cert-manager` and `cert-manager-operator`
+* `konflux-cli` and `konflux-info`
 * `konflux-operator`
 * `konflux-ui`
 * `openshift-storage`
 * `rhbk-operator`
 * `rhtpa-operator`
-* `tssc-keycloak`
+* `tsf`
+* `tsf-keycloak`
 * `tssc-quay`
 * `tsf-tas`
 * `tsf-tpa`
