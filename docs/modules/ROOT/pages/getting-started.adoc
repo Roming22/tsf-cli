@@ -144,7 +144,7 @@ After the build and release complete, verify the security artifacts that {TSFSho
 
 . **Signature verification:**
 +
-Verify the image signature using `cosign`. You must have `cosign` installed on your local machine (it is not included in the installer container).
+Verify the image signature using `cosign`. The `cosign` binary is not included in the installer container. You can download it from the cluster by following the link:https://docs.redhat.com/en/documentation/red_hat_trusted_artifact_signer/1/html-single/deployment_guide/index#downloading-the-trusted-artifact-signer-cli-binaries_deploy[Downloading the {RHTASName} CLI binaries] instructions.
 +
 [source,bash]
 ----

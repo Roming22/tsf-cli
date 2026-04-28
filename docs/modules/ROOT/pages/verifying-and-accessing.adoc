@@ -19,11 +19,11 @@ If you did not save the URL from the deployment output, retrieve it from the {OC
 +
 [source,bash]
 ----
-KONFLUX_URL=$(oc get route -n konflux-ui -o jsonpath='{.items[0].spec.host}')
+KONFLUX_URL=$(oc get route -n konflux-ui -l app.kubernetes.io/part-of=konflux-ui -o jsonpath='{.items[0].spec.host}')
 echo "Konflux UI: https://$KONFLUX_URL"
 ----
 +
-NOTE: The route name is auto-generated and varies per deployment. The command above uses a selector to retrieve the first route in the `konflux-ui` namespace.
+NOTE: The route name is auto-generated and varies per deployment. The command above uses a label selector to retrieve the correct route.
 
 . On the {OCPShortName} login page, enter your credentials and click *Log in*.
 
