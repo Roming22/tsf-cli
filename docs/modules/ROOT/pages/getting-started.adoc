@@ -8,7 +8,7 @@ After installing and verifying {TSFShortName}, onboard your first application to
 
 * {TSFShortName} is xref:installing.adoc[installed] and xref:verifying-and-accessing.adoc[verified] on your {OCPShortName} cluster.
 * You can log in to the {KonfluxName} UI.
-* You have a Git repository with source code that you want to build. If you do not have one, fork the link:https://github.com/konflux-ci/sample-component-golang[sample-component-golang] repository.
+* You have a Git repository with source code that you want to build. If you do not have one, fork the link:https://github.com/konflux-ci/sample-component-golang[sample-component-golang] repository. This sample ships with clean dependencies so that your first onboarding succeeds without policy violations.
 * Your Git provider integration (GitHub or GitLab) is configured as part of the xref:installing.adoc[installation].
 
 == Log in to the {KonfluxName} UI
@@ -76,18 +76,31 @@ IMPORTANT: Do not merge this pull request yet. Configure a release first so you 
 
 By default, onboarded components are not automatically released. A Platform Engineer must configure the release criteria and destination before artifacts can be released.
 
-The release configuration process involves creating various Custom Resources in OpenShift. Use the link:https://github.com/konflux-ci/konflux-ci/blob/release-0.1/operator/upstream-kustomizations/cli/setup-release.sh[setup-release.sh wrapper script] to simplify this process.
+The release configuration process involves creating various Custom Resources in {OCPShortName}. The `setup-release.sh` script simplifies this process. The script is shipped with the {KonfluxName} Operator as a ConfigMap, so it is always compatible with the installed version.
 
-Log in to the {OCPShortName} cluster as the Platform Engineer (cluster admin) and run the script:
+Log in to the {OCPShortName} cluster as the Platform Engineer (cluster admin) and run the following commands:
 
+. Download the `setup-release.sh` script from the cluster:
++
 [source,bash]
 ----
-curl -O https://raw.githubusercontent.com/konflux-ci/konflux-ci/refs/heads/release-0.1/operator/upstream-kustomizations/cli/setup-release.sh
+oc get configmap setup-release -n konflux-cli \
+  -o jsonpath='{.data.setup-release\.sh}' > setup-release.sh
 chmod +x setup-release.sh
-./setup-release.sh --application <application_name> --component <component_name>
 ----
 
+. Run the script to configure the release:
++
+[source,bash]
+----
+./setup-release.sh -a <application_name> -t <tenant-namespace> -m <managed-namespace>
+----
++
+Use `./setup-release.sh -h` for complete options.
+
 This script creates the necessary release plan, release policy, and release pipeline resources.
+
+TIP: A `create-tenant.sh` script is also available as a ConfigMap in the `konflux-cli` namespace. Download it the same way to create tenant namespaces with the required RBAC resources.
 
 == Trigger a release
 
@@ -137,3 +150,4 @@ View the Rekor transparency log entry for the signing event.
 * **Customize the build pipeline** by editing the `.tekton/` files in your repository.
 * **Configure policy** using Conforma to enforce your organization's security requirements.
 * **Configure additional integration tests** to validate your builds against custom criteria.
+* **Demonstrate CVE detection** — The `sample-component-golang` repository includes a `demo/cve-onboarding/` directory with frozen vulnerable dependencies. Copy `demo/cve-onboarding/go.mod` and `demo/cve-onboarding/go.sum` to the repository root, commit, and push to trigger a build that fails policy checks due to known CVEs. See the link:https://github.com/konflux-ci/sample-component-golang#demonstrating-cve-detection-during-onboarding[sample repository README] for details.
