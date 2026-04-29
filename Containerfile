@@ -41,6 +41,11 @@ LABEL \
   io.k8s.display-name="Red Hat Trusted Software Factory CLI" \
   io.openshift.tags="ec konflux openshift tas tpa tsf"
 
+# Install utilties for the container
+RUN dnf install -y procps-ng && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
+
 # Banner
 RUN echo 'cat << "EOF"' >> /etc/profile && \
     echo '╔═══════════════════════════════════════════════════════╗' >> /etc/profile && \
