@@ -19,13 +19,17 @@ After installing and verifying {TSFShortName}, onboard your first application to
 
 . Authorize the `dex-client` service account when prompted.
 
-The {KonfluxName} dashboard displays the *Get started with {KonfluxName}* landing page.
+The {KonfluxName} dashboard displays the landing page.
 
 == Create an application
 
 An application in {KonfluxName} is a logical grouping of one or more components that are built, tested, and released together.
 
-. In the {KonfluxName} UI, click *Create an application*.
+. In the {KonfluxName} UI, click *View my namespaces*.
+
+. Select your tenant namespace (for example, `default-tenant`).
+
+. Click *Create Application*.
 
 . Enter a name for your application, for example, `my-app`.
 
@@ -37,9 +41,14 @@ For more details, see link:https://konflux-ci.dev/docs/building/creating/#creati
 
 A component maps to a single Git repository and branch. When you create a component, {KonfluxName} onboards the repository and configures the build pipeline.
 
-. From your application page, click *Add component*.
+. From your application page, open the *Actions* dropdown and click *Add component*.
 
-. Enter the Git repository URL for your source code. For example: `\https://github.com/konflux-ci/sample-component-golang`.
+. Enter the Git repository URL for your source code.
++
+--
+* GitHub example: `\https://github.com/konflux-ci/sample-component-golang`
+* GitLab example: `\https://gitlab.com/<your-group>/sample-component-golang`
+--
 
 . Select the branch to build from.
 
@@ -84,7 +93,8 @@ Log in to the {OCPShortName} cluster as the Platform Engineer (cluster admin) an
 +
 [source,bash]
 ----
-oc get configmap setup-release -n konflux-cli \
+oc get configmap setup-release \
+  -n konflux-cli \
   -o jsonpath='{.data.setup-release\.sh}' > setup-release.sh
 chmod +x setup-release.sh
 ----
@@ -134,12 +144,23 @@ After the build and release complete, verify the security artifacts that {TSFSho
 * The UI displays vulnerability reports and license information.
 
 . **Signature verification:**
-+
-Verify the image signature using `cosign`:
+Download `cosign` from the cluster:
 +
 [source,bash]
 ----
-cosign tree <image-reference>
+tas_host=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=client-server" -o jsonpath='{.items[0].spec.host}')
+curl -sSLo cosign.gz https://${tas_host}/clients/linux/cosign-${ARCH}.gz
+gunzip cosign.gz
+chmod +x cosign
+----
++
+Download `cosign` from the {OCPShortName} cluster to your local machine. The `cosign` binary is not included in the installer container. For download and setup instructions, see link:https://docs.redhat.com/en/documentation/red_hat_trusted_artifact_signer/{RHTASVersion}/html-single/deployment_guide/index#signing-and-verifying-containers-by-using-cosign-from-the-command-line-interface-for-openshift_deploy[Signing and verifying containers by using Cosign from the command-line interface].
++
+Verify the image signature:
++
+[source,bash]
+----
+./cosign tree <image-reference>
 ----
 +
 View the Rekor transparency log entry for the signing event.

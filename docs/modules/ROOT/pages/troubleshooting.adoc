@@ -6,7 +6,6 @@ Use this guide to diagnose and resolve common issues during {TSFShortName} insta
 **On this page:**
 
 * <<quay-token-error-during-deployment>>
-* <<cert-manager-subscription-conflict>>
 * <<rhtpa-ui-url-is-not-accessible>>
 * <<deployment-appears-to-hang>>
 * <<browser-fails-to-open-during-github-integration>>
@@ -50,22 +49,6 @@ tsf integration quay \
 ----
 tsf deploy
 ----
-
-[id="cert-manager-subscription-conflict"]
-== Cert-Manager subscription conflict
-
-**Symptom:** The deployment fails with a subscription conflict error for the Cert-Manager operator.
-
-**Cause:** The Red Hat Cert-Manager Operator is already installed on the cluster. The {TSFShortName} installer attempts to create a second subscription, which conflicts with the existing one.
-
-**Resolution:** Edit the `tsf-config` ConfigMap and set `manageSubscription` to `false` for the Cert-Manager component:
-
-[source,bash]
-----
-oc edit configmap tsf-config -n tsf
-----
-
-Locate the Cert-Manager entry and change `manageSubscription: true` to `manageSubscription: false`. Then re-run the deployment.
 
 [id="rhtpa-ui-url-is-not-accessible"]
 == {RHTPAName} UI URL is not accessible

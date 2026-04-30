@@ -65,7 +65,7 @@ COPY LICENSE.txt .
 
 WORKDIR /tsf
 
-COPY --from=ose-tools /usr/bin/jq /usr/bin/kubectl /usr/bin/oc /usr/bin/vi /usr/bin/
+COPY --from=ose-tools /usr/bin/jq /usr/bin/kubectl /usr/bin/oc /usr/bin/vi /usr/bin/watch /usr/bin/
 # jq libraries
 COPY --from=ose-tools /usr/lib64/libjq.so.1 /usr/lib64/libonig.so.5 /usr/lib64/
 # vi libraries
@@ -74,9 +74,6 @@ COPY --from=ose-tools /usr/libexec/vi /usr/libexec/
 COPY --from=builder /workdir/tsf/installer/charts ./charts
 COPY --from=builder /workdir/tsf/installer/config.yaml ./
 COPY --from=builder /workdir/tsf/bin/tsf /usr/local/bin/tsf
-
-COPY scripts ./scripts
-RUN chmod +x ./scripts/*.sh
 
 RUN groupadd --gid 9999 -r tsf && \
     useradd -r -d /tsf -g tsf -s /sbin/nologin --uid 9999 tsf && \

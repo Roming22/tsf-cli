@@ -15,14 +15,15 @@ Access the {KonfluxName} web interface to verify that the deployment succeeded a
 
 . Open the {KonfluxName} UI URL in a web browser.
 +
-If you did not save the URL from the deployment output, find it through the {OCPShortName} Routes:
+If you did not save the URL from the deployment output, retrieve it from the {OCPShortName} route:
 +
 [source,bash]
 ----
-oc get routes -n konflux-ui
+KONFLUX_URL=$(oc get route -n konflux-ui -l app.kubernetes.io/part-of=konflux-ui -o jsonpath='{.items[0].spec.host}')
+echo "Konflux UI: https://$KONFLUX_URL"
 ----
 +
-Open the URL in the `HOST/PORT` column.
+NOTE: The route name is auto-generated and varies per deployment. The command above uses a label selector to retrieve the correct route.
 
 . On the {OCPShortName} login page, enter your credentials and click *Log in*.
 
@@ -33,7 +34,7 @@ Open the URL in the `HOST/PORT` column.
 
 === Verification
 
-The {KonfluxName} dashboard loads and displays the *Get started with {KonfluxName}* landing page with options to view namespaces and access the Release Monitor Board.
+The {KonfluxName} dashboard loads and displays the landing page with options to view your namespaces and access the Release Monitor Board.
 
 == Deployed components
 
@@ -49,7 +50,7 @@ The {TSFShortName} installer deploys the following components to your {OCPShortN
 | Manages application certificate lifecycle.
 
 | Red Hat build of Keycloak
-| `tssc-keycloak`
+| `tsf-keycloak`
 | `tsf-infrastructure`
 | Provides identity management and single sign-on.
 
@@ -86,9 +87,13 @@ The {TSFShortName} installer deploys the following components to your {OCPShortN
 
 The installer also creates the following supporting namespaces:
 
+* `cert-manager`
+* `konflux-cli`
+* `konflux-info`
 * `openshift-storage`
 * `rhbk-operator`
 * `rhtpa-operator`
+* `tsf`
 
 == Next step
 

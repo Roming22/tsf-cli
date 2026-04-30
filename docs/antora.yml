@@ -24,4 +24,5 @@ asciidoc:
     OCPCli: 'oc'
     KonfluxName: 'Konflux'
     RHTASName: 'Red Hat Trusted Artifact Signer'
+    RHTASVersion: '1.4'
     RHTPAName: 'Red Hat Trusted Profile Analyzer'

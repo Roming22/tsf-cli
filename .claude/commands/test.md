@@ -36,7 +36,11 @@ If any required variable is missing, use AskUserQuestion to ask the user to prov
 Before running the tests, the release infrastructure must be set up on the cluster. Run `setup-release.sh` to create the managed namespace, EnterpriseContractPolicy, ImageRepositories, ReleasePlanAdmission, and ReleasePlan:
 
 ```
-bash scripts/setup-release.sh \
+kubectl get configmap setup-release \
+  -n konflux-cli \
+  -o jsonpath='{.data.setup-release\.sh}' > setup-release.sh
+chmod +x setup-release.sh
+./setup-release.sh \
   -t "${E2E_APPLICATIONS_NAMESPACE}" \
   -m "${TSF_MANAGED_NAMESPACE}" \
   -a "${TSF_APPLICATION_NAME}" \
