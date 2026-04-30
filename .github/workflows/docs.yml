@@ -1,4 +1,4 @@
-name: Validate docs
+name: Docs
 
 on:
   pull_request:
@@ -7,12 +7,54 @@ on:
     paths:
       - 'docs/**'
       - 'antora-playbook.yml'
+  push:
+    tags:
+      - docs
+    branches:
+      - 'release-*'
 
 permissions:
-  contents: read
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
+  tag:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release-')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if this is the latest release branch
+        id: check
+        run: |
+          CURRENT_BRANCH="${GITHUB_REF#refs/heads/}"
+          LATEST_BRANCH="${{ vars.DOCS_RELEASE_BRANCH }}"
+          if [ -z "$LATEST_BRANCH" ]; then
+            echo "DOCS_RELEASE_BRANCH variable is not set. Skipping."
+            echo "match=false" >> "$GITHUB_OUTPUT"
+          elif [ "$CURRENT_BRANCH" = "$LATEST_BRANCH" ]; then
+            echo "Branch $CURRENT_BRANCH matches DOCS_RELEASE_BRANCH."
+            echo "match=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Branch $CURRENT_BRANCH does not match DOCS_RELEASE_BRANCH ($LATEST_BRANCH). Skipping."
+            echo "match=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.check.outputs.match == 'true'
+        uses: actions/checkout@v4
+
+      - name: Force-tag current commit as docs
+        if: steps.check.outputs.match == 'true'
+        run: |
+          git tag -f docs
+          git push origin docs --force
+
   build:
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/tags/docs')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,3 +70,25 @@ jobs:
 
       - name: Build site
         run: SITE_SEARCH_PROVIDER=lunr antora --fetch antora-playbook.yml
+
+      - name: Disable Jekyll
+        if: github.ref == 'refs/tags/docs'
+        run: touch build/site/.nojekyll
+
+      - name: Upload artifact
+        if: github.ref == 'refs/tags/docs'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/site
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/tags/docs'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
