@@ -93,7 +93,8 @@ Log in to the {OCPShortName} cluster as the Platform Engineer (cluster admin) an
 +
 [source,bash]
 ----
-oc get configmap setup-release -n konflux-cli \
+oc get configmap setup-release \
+  -n konflux-cli \
   -o jsonpath='{.data.setup-release\.sh}' > setup-release.sh
 chmod +x setup-release.sh
 ----
@@ -143,6 +144,15 @@ After the build and release complete, verify the security artifacts that {TSFSho
 * The UI displays vulnerability reports and license information.
 
 . **Signature verification:**
+Download `cosign` from the cluster:
++
+[source,bash]
+----
+tas_host=$(oc get route -A -l "app.kubernetes.io/part-of=trusted-artifact-signer,app.kubernetes.io/component=client-server" -o jsonpath='{.items[0].spec.host}')
+curl -sSLo cosign.gz https://${tas_host}/clients/linux/cosign-${ARCH}.gz
+gunzip cosign.gz
+chmod +x cosign
+----
 +
 Download `cosign` from the {OCPShortName} cluster to your local machine. The `cosign` binary is not included in the installer container. For download and setup instructions, see link:https://docs.redhat.com/en/documentation/red_hat_trusted_artifact_signer/{RHTASVersion}/html-single/deployment_guide/index#signing-and-verifying-containers-by-using-cosign-from-the-command-line-interface-for-openshift_deploy[Signing and verifying containers by using Cosign from the command-line interface].
 +
@@ -150,7 +160,7 @@ Verify the image signature:
 +
 [source,bash]
 ----
-cosign tree <image-reference>
+./cosign tree <image-reference>
 ----
 +
 View the Rekor transparency log entry for the signing event.
