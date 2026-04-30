@@ -18,6 +18,7 @@ import (
 	"unicode"
 
 	"github.com/google/uuid"
+
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/util"
 )
@@ -344,10 +345,21 @@ func (s *StreamableHTTPServer) handlePost(w http.ResponseWriter, r *http.Request
 	}
 
 	// detect empty ping response, skip session ID validation
-	isPingResponse := jsonMessage.Method == "" && jsonMessage.ID != nil &&
+	isEmptyResponse := jsonMessage.Method == "" && jsonMessage.ID != nil &&
 		(isJSONEmpty(jsonMessage.Result) && isJSONEmpty(jsonMessage.Error))
+	isPingResponse := jsonMessage.Method == "" && jsonMessage.ID != nil &&
+		isExplicitEmptyObject(jsonMessage.Result) && len(bytes.TrimSpace(jsonMessage.Error)) == 0
 
 	if isPingResponse {
+		w.WriteHeader(http.StatusAccepted)
+		return
+	}
+	if isEmptyResponse {
+		// Per MCP spec (Streamable HTTP transport, rule 4): the server MUST return
+		// 202 Accepted for any accepted JSON-RPC response or notification, regardless
+		// of whether result is {} or omitted. HTTP 200 with no body has no defined
+		// meaning in this transport for POST requests carrying responses.
+		w.WriteHeader(http.StatusAccepted)
 		return
 	}
 
@@ -361,7 +373,7 @@ func (s *StreamableHTTPServer) handlePost(w http.ResponseWriter, r *http.Request
 	if isSamplingResponse {
 		if err := s.handleSamplingResponse(w, r, jsonMessage); err != nil {
 			s.logger.Errorf("Failed to handle sampling response: %v", err)
-			http.Error(w, "Failed to handle sampling response", http.StatusInternalServerError)
+			// HTTP Status code is already set in handleSamplingResponse, just return here
 		}
 		return
 	}
@@ -473,8 +485,14 @@ func (s *StreamableHTTPServer) handlePost(w http.ResponseWriter, r *http.Request
 	// Process message through MCPServer
 	response := s.server.HandleMessage(ctx, rawData)
 	if response == nil {
-		// For notifications, just send 202 Accepted with no body
-		w.WriteHeader(http.StatusAccepted)
+		mu.Lock()
+		close(done)
+		if !upgradedHeader {
+			mu.Unlock()
+			w.WriteHeader(http.StatusAccepted)
+		} else {
+			mu.Unlock()
+		}
 		return
 	}
 
@@ -510,7 +528,10 @@ drainLoop:
 		return
 	}
 	// If client-server communication already upgraded to SSE stream
-	if session.upgradeToSSE.Load() {
+	// Also check upgradedHeader: a notification during HandleMessage processing
+	// may have already written SSE headers on this response, so we must continue
+	// in SSE mode to avoid writing JSON on top of SSE data.
+	if session.upgradeToSSE.Load() || upgradedHeader {
 		if !upgradedHeader {
 			w.Header().Set("Content-Type", "text/event-stream")
 			w.Header().Set("Connection", "keep-alive")
@@ -592,6 +613,7 @@ func (s *StreamableHTTPServer) handleGet(w http.ResponseWriter, r *http.Request)
 		}
 		defer s.server.UnregisterSession(r.Context(), sessionID)
 		defer s.activeSessions.Delete(sessionID)
+		defer s.sessionRequestIDs.Delete(sessionID)
 	}
 
 	s.touchSession(sessionID)
@@ -807,38 +829,42 @@ func (s *StreamableHTTPServer) handleSamplingResponse(w http.ResponseWriter, r *
 
 	// Find the corresponding session and deliver the response
 	// The response is delivered to the specific session identified by sessionID
-	if err := s.deliverSamplingResponse(sessionID, response); err != nil {
-		s.logger.Errorf("Failed to deliver sampling response: %v", err)
-		http.Error(w, "Failed to deliver response", http.StatusInternalServerError)
-		return err
+	if err := s.deliverSamplingResponse(w, sessionID, response); err != nil {
+		// HTTP Status code is already set in deliverSamplingResponse, just return here
+		return fmt.Errorf("failed to deliver sampling response: %w", err)
 	}
 
 	// Acknowledge receipt
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusAccepted)
 	return nil
 }
 
-// deliverSamplingResponse delivers a sampling response to the appropriate session
-func (s *StreamableHTTPServer) deliverSamplingResponse(sessionID string, response samplingResponseItem) error {
+// deliverSamplingResponse delivers a sampling response to the appropriate session.
+// On failure it writes the HTTP error status directly to w.
+func (s *StreamableHTTPServer) deliverSamplingResponse(w http.ResponseWriter, sessionID string, response samplingResponseItem) error {
 	// Look up the active session
 	sessionInterface, ok := s.activeSessions.Load(sessionID)
 	if !ok {
+		http.Error(w, "No active session found for the given session ID", http.StatusNotFound)
 		return fmt.Errorf("no active session found for session %s", sessionID)
 	}
 
 	session, ok := sessionInterface.(*streamableHttpSession)
 	if !ok {
+		http.Error(w, "Invalid session type for the given session ID", http.StatusInternalServerError)
 		return fmt.Errorf("invalid session type for session %s", sessionID)
 	}
 
 	// Look up the dedicated response channel for this specific request
 	responseChannelInterface, exists := session.samplingRequests.Load(response.requestID)
 	if !exists {
+		http.Error(w, "No pending sampling request found for the given request ID", http.StatusBadRequest)
 		return fmt.Errorf("no pending request found for session %s, request %d", sessionID, response.requestID)
 	}
 
 	responseChan, ok := responseChannelInterface.(chan samplingResponseItem)
 	if !ok {
+		http.Error(w, "Failed to deliver response", http.StatusInternalServerError)
 		return fmt.Errorf("invalid response channel type for session %s, request %d", sessionID, response.requestID)
 	}
 
@@ -848,6 +874,7 @@ func (s *StreamableHTTPServer) deliverSamplingResponse(sessionID string, respons
 		s.logger.Infof("Delivered sampling response for session %s, request %d", sessionID, response.requestID)
 		return nil
 	default:
+		http.Error(w, "Failed to deliver response", http.StatusInternalServerError)
 		return fmt.Errorf("failed to deliver sampling response for session %s, request %d: channel full or blocked", sessionID, response.requestID)
 	}
 }
@@ -1579,4 +1606,23 @@ func isJSONEmpty(data json.RawMessage) bool {
 			trimmed[3] == 'l'
 	}
 	return false
+}
+
+// isExplicitEmptyObject reports whether data is a JSON object literal with no fields.
+func isExplicitEmptyObject(data json.RawMessage) bool {
+	if len(data) == 0 {
+		return false
+	}
+
+	trimmed := bytes.TrimSpace(data)
+	if len(trimmed) == 0 || trimmed[0] != '{' {
+		return false
+	}
+
+	var obj map[string]json.RawMessage
+	if err := json.Unmarshal(trimmed, &obj); err != nil {
+		return false
+	}
+
+	return len(obj) == 0
 }
