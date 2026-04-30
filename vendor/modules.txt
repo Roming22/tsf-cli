@@ -1081,7 +1081,7 @@ k8s.io/klog/v2/internal/dbg
 k8s.io/klog/v2/internal/serialize
 k8s.io/klog/v2/internal/severity
 k8s.io/klog/v2/internal/sloghandler
-# k8s.io/kube-openapi v0.0.0-20260304202019-5b3e3fdb0acf
+# k8s.io/kube-openapi v0.0.0-20260430154526-c903c4073796
 ## explicit; go 1.23.0
 k8s.io/kube-openapi/pkg/cached
 k8s.io/kube-openapi/pkg/common
