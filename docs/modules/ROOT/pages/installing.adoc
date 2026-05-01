@@ -129,7 +129,7 @@ NOTE: The installer may log an error about failing to open the browser. This is 
 
 === Verification
 
-* The GitHub App page displays with a *Website* link that points to the {KonfluxName} UI. You can use this link to access the UI after deployment is complete.
+* The GitHub App page includes a *Website* link that points to the {KonfluxName} UI. You can use this link to access the UI after deployment is complete.
 * In the GitHub organization settings under *Developer settings > GitHub Apps*, the newly created app appears with the correct permissions.
 
 == Configure the GitLab integration

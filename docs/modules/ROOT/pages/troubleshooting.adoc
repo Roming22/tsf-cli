@@ -73,7 +73,7 @@ oc get pods -n tsf-tpa
 oc get pods -n tsf-tpa | grep postgres
 ----
 
-. If pods are in error state, check the logs:
+. If pods are in an error state, check the logs:
 +
 [source,bash]
 ----
