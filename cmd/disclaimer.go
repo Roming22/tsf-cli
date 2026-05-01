@@ -8,7 +8,7 @@ import (
 )
 
 // printDisclaimer emits a support-level disclaimer to stderr on interactive
-// sessions. Suppressed when TSSC_NO_DISCLAIMER is set or stderr is not a
+// sessions. Suppressed when TSF_NO_DISCLAIMER is set or stderr is not a
 // terminal.
 func printDisclaimer() {
 	if os.Getenv("TSF_NO_DISCLAIMER") != "" {
@@ -21,6 +21,6 @@ func printDisclaimer() {
 		os.Stderr,
 		"NOTE: The TSF installation program generates your first deployment "+
 			"of RHADS-TSF but does not support upgrades. "+
-			"Each products must be manually reconfigured for production workloads.\n\n",
+			"Each product must be manually reconfigured for production workloads.\n\n",
 	)
 }

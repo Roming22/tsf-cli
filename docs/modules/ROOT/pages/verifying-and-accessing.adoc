@@ -27,7 +27,7 @@ NOTE: The route name is auto-generated and varies per deployment. The command ab
 
 . On the {OCPShortName} login page, enter your credentials and click *Log in*.
 
-. On the *Authorize Access* page, the `dex-client` service account in the `konflux-ui` project requests permission to access your account. Review the requested permission:
+. On the *Authorize Access* page, the `dex-client` service account in the `konflux-ui` project requests permission to access your account. Review the requested permissions:
 * `user:info` — read-only access to your user information, including username, identities, and group membership.
 
 . Click *Allow selected permissions*.
